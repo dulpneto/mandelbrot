@@ -12,11 +12,14 @@ extern "C" {
 
 const int MAX_ITER = 100;
 
+/*CPU*/
 void runCPU(int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int height, int threads, char *output);
-void mandelbrotCPU(int x, int y, int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int height, int *buffer);
+void mandelbrotCPU(int index, int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int height, int *buffer);
 
+/*GPU*/
 void runGPU(int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int height, int threads, char *output);
 __global__ void mandelbrotGPU(int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int height, int *buffer);
+
 
 int main(int argc, char *argv[]){
     //Input params
@@ -59,9 +62,7 @@ void runCPU(int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int h
 
   #pragma omp parallel for
   for (int i = 0; i < width * height; i++){
-    int y = i / width;
-    int x = i % width;
-    mandelbrotCPU(x, y, c0_real, c0_imag, c1_real, c1_imag, width, height, buffer);
+    mandelbrotCPU(i, c0_real, c0_imag, c1_real, c1_imag, width, height, buffer);
   }
 
   writeImage(output, width, height, MAX_ITER, buffer);
@@ -69,8 +70,10 @@ void runCPU(int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int h
   free(buffer);
 }
 
-void mandelbrotCPU(int x, int y, int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int height, int *buffer){
+void mandelbrotCPU(int index, int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int height, int *buffer){
     int i;
+    int y = index / width;
+    int x = index % width;
     float w = width;
     float h = height;
 
@@ -113,8 +116,8 @@ void runGPU(int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int h
   cudaMemcpy(d_height, &height, sizeof(int), cudaMemcpyHostToDevice);
   //memcpy
 
-  unsigned blocks_per_grid = ceil((w * h) / n_threads);
-  mandelbrotGPU<<< blocks_per_grid , n_threads >>>(
+  unsigned blocks_per_grid = ceil((width * height) / threads);
+  mandelbrotGPU<<< blocks_per_grid , threads >>>(
     d_c0_real, d_c0_imag, d_c1_real, d_c1_imag, d_width, d_height, d_buffer);
 
   //sync
