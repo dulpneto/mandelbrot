@@ -1,25 +1,17 @@
 T=1
+CO_R=$(( -2 ))
+CO_I=$(( -1 ))
+C1_R=$(( 1 ))
+C1_I=$(( 1 ))
 for l in {0..11}; do
-	CO_R=$(( -2 ))
-	CO_I=$(( -1 ))
-	C1_R=$(( 1 ))
-	C1_I=$(( 1 ))
-	for i in {0..3}; do
-
-		W=$(( 60 ))
-		H=$(( 40 ))
+	W=$(( 60 ))
+	H=$(( 40 ))
 		
-		for k in {0..3}; do
-			W=$(( $W * 10 ))
-			H=$(( $H * 10 ))
-			echo "$T x $CO_R x $W" | tr '\n' ',' >> resultado_CPU.txt
-			echo "$T x $CO_R x $W" | tr '\n' ',' >> resultado_GPU.txt
-		done
-
-		CO_R=$(( $CO_R * 10 ))
-		CO_I=$(( $CO_I * 10 ))
-		C1_R=$(( $C1_R * 10 ))
-		C1_I=$(( $C1_I * 10 ))
+	for k in {0..3}; do
+		W=$(( $W * 10 ))
+		H=$(( $H * 10 ))
+		echo "$T - $W x $H" | tr '\n' ',' >> resultado_CPU.txt
+		echo "$T - $W x $H" | tr '\n' ',' >> resultado_GPU.txt
 	done
 	T=$(( $T * 2 ))
 done
@@ -30,30 +22,17 @@ echo "" >> resultado_GPU.txt
 for j in {0..100}; do
 	echo "Amostra $j"
 
-	
-
 	T=1
 	for l in {0..11}; do
-		CO_R=$(( -2 ))
-		CO_I=$(( -1 ))
-		C1_R=$(( 1 ))
-		C1_I=$(( 1 ))
-		for i in {0..3}; do
 
-			W=$(( 60 ))
-			H=$(( 40 ))
+		W=$(( 60 ))
+		H=$(( 40 ))
 
-			for k in {0..3}; do
-				W=$(( $W * 10 ))
-				H=$(( $H * 10 ))
-				./mandelbrot $CO_R $CO_I $C1_R $C1_I $W $H CPU $T saida.png | tr '\n' ',' >> resultado_CPU.txt
-				./mandelbrot $CO_R $CO_I $C1_R $C1_I $W $H GPU $T saida.png | tr '\n' ',' >> resultado_GPU.txt
-			done
-
-			CO_R=$(( $CO_R * 10 ))
-			CO_I=$(( $CO_I * 10 ))
-			C1_R=$(( $C1_R * 10 ))
-			C1_I=$(( $C1_I * 10 ))
+		for k in {0..3}; do
+			W=$(( $W * 10 ))
+			H=$(( $H * 10 ))
+			./mandelbrot $CO_R $CO_I $C1_R $C1_I $W $H CPU $T saida.png | tr '\n' ',' >> resultado_CPU.txt
+			./mandelbrot $CO_R $CO_I $C1_R $C1_I $W $H GPU $T saida.png | tr '\n' ',' >> resultado_GPU.txt
 		done
 
 		T=$(( $T * 2 ))
