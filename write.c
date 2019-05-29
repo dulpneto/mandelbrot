@@ -25,10 +25,6 @@ int writeImage(char* filename, int width, int height, int iterations, int *buffe
   png_structp png_ptr = NULL;
   png_infop info_ptr = NULL;
   png_bytep row = NULL;
-
-  if(true){
-    return 0;
-  }
   
   // Open file for writing (binary mode)
   fp = fopen(filename, "wb");

@@ -65,7 +65,7 @@ void runCPU(int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int h
     mandelbrotCPU(i, c0_real, c0_imag, c1_real, c1_imag, width, height, buffer);
   }
 
-  writeImage(output, width, height, MAX_ITER, buffer);
+  //writeImage(output, width, height, MAX_ITER, buffer);
 
   free(buffer);
 }
@@ -134,7 +134,7 @@ void runGPU(int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int h
   cudaFree(d_buffer);
   //free cuda
 
-  writeImage(output, width, height, MAX_ITER, buffer);
+  //writeImage(output, width, height, MAX_ITER, buffer);
 
   free(buffer);
 }
