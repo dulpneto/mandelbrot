@@ -1,5 +1,5 @@
 CC=nvcc
-CCFLAGS=-Wall -O0 -Xcompiler -fopenmp -lpng
+CCFLAGS=-O0 -Xcompiler -fopenmp -lpng
 LDFLAGS=-lm -lpthread
 
 all: mandelbrot

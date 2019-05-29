@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <complex.h>
+#include <thrust/complex.h>
 #include <sys/time.h>
 #include <omp.h>
 #include <cuda.h>
@@ -18,7 +18,7 @@ void mandelbrotCPU(int index, int c0_real, int c0_imag, int c1_real, int c1_imag
 
 /*GPU*/
 void runGPU(int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int height, int threads, char *output);
-__global__ void mandelbrotGPU(int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int height, int *buffer);
+__global__ void mandelbrotGPU(int *c0_real, int *c0_imag, int *c1_real, int *c1_imag, int *width, int *height, int *buffer);
 
 
 int main(int argc, char *argv[]){
@@ -77,14 +77,14 @@ void mandelbrotCPU(int index, int c0_real, int c0_imag, int c1_real, int c1_imag
     float w = width;
     float h = height;
 
-    complex c = (c0_real + (x / w) * (c1_real - c0_real)) + 
-                (c0_imag + (y / h) * (c1_imag - c0_imag))*I;
+    thrust::complex<float> c = thrust::complex<float>((c0_real + (x / w) * (c1_real - c0_real)),
+                                 (c0_imag + (y / h) * (c1_imag - c0_imag)));
     
-    complex z = 0;
+    thrust::complex<float> z = thrust::complex<float>(0,0);
 
     for(i = 0; i < MAX_ITER; i++) {
         z = z*z + c;
-        if(creal(z) > 2 || cimag(z) > 2) break;
+        if(z.real() > 2 || z.imag() > 2) break;
     }
     
     buffer[y*width + x] = (i == MAX_ITER ? 0 : i);
@@ -95,7 +95,7 @@ void runGPU(int c0_real, int c0_imag, int c1_real, int c1_imag, int width, int h
 
   int *d_c0_real, *d_c0_imag, *d_c1_real, *d_c1_imag;
   int *d_width, *d_height;
-  int *d_buffer
+  int *d_buffer;
 
   //cuda alloc
   cudaMalloc(&d_c0_real, sizeof(int));
@@ -147,21 +147,21 @@ __global__ void mandelbrotGPU(int *c0_real, int *c0_imag, int *c1_real, int *c1_
     if (index > ((*width) * (*height)) - 1){
       return ;
     }
-    int y = index / (*w);
-    int x = index % (*w);
+    int y = index / (*width);
+    int x = index % (*width);
     int i;
-    float w = width;
-    float h = height;
+    float w = *width;
+    float h = *height;
 
-    complex c = (c0_real + (x / w) * (c1_real - c0_real)) + 
-                (c0_imag + (y / h) * (c1_imag - c0_imag))*I;
+    thrust::complex<float> c = thrust::complex<float>((*c0_real + (x / w) * (*c1_real - *c0_real)),
+                                 (*c0_imag + (y / h) * (*c1_imag - *c0_imag)));
     
-    complex z = 0;
+    thrust::complex<float> z = thrust::complex<float>(0,0);
 
     for(i = 0; i < MAX_ITER; i++) {
         z = z*z + c;
-        if(creal(z) > 2 || cimag(z) > 2) break;
+        if(z.real() > 2 || z.imag() > 2) break;
     }
     
-    buffer[y*width + x] = (i == MAX_ITER ? 0 : i);
+    buffer[y * (*width) + x] = (i == MAX_ITER ? 0 : i);
 }
