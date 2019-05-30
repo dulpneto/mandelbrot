@@ -31,8 +31,8 @@ for j in {0..100}; do
 		for k in {0..2}; do
 			W=$(( $W * 10 ))
 			H=$(( $H * 10 ))
-			./mandelbrot $CO_R $CO_I $C1_R $C1_I $W $H CPU $T saida.png | tr '\n' ',' >> resultado2_CPU.txt
-			./mandelbrot $CO_R $CO_I $C1_R $C1_I $W $H GPU $T saida.png | tr '\n' ',' >> resultado2_GPU.txt
+			./mandelbrot $CO_R $CO_I $C1_R $C1_I $W $H CPU $T saidaCpu.png | tr '\n' ',' >> resultado2_CPU.txt
+			./mandelbrot $CO_R $CO_I $C1_R $C1_I $W $H GPU $T saidaGpu.png | tr '\n' ',' >> resultado2_GPU.txt
 		done
 
 		T=$(( $T * 2 ))
