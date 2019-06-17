@@ -1,0 +1,9 @@
+compilar 
+
+mpicc pi_process.c -o pi_process
+
+run
+
+mpirun -np 2 pi_process 1000
+
+mpiexec -np
